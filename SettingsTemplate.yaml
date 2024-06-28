@@ -1,0 +1,21 @@
+body:
+    - type: dropdown
+      attributes:
+          name: language
+          label: Language
+          description: Select the language cards should be searched in.
+          defaultValue: English
+          options:
+              - English
+              - French
+              - German
+              - Portuguese
+              - Italian
+    - type: textBlock
+      attributes:
+          description: >-
+              You can filter result by using the ":" operator. Possible values are |
+              :{level/rank/link}, e.g. :3 or 8 | :{card type}, e.g. :synchro or :Spell
+              or :gemini (no combinations) | :{monster attribute}, e.g. :earth or
+              :WIND | :{monster type}, e.g. :warrior or :sea-serpent | :atk{atk
+              value}, e.g. :atk2300 or :atk0 (no ?) | :def{def value}
