@@ -10,13 +10,14 @@ on:
 jobs:
     publish:
         runs-on: ubuntu-latest
-
+        permissions:
+            contents: write
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
             - name: Set up Node.Js
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v4
               with:
-                  node-version: "20.15.0"
+                  node-version-file: "package.json"
             - name: get version
               id: version
               uses: notiz-dev/github-action-json-property@release
@@ -29,9 +30,7 @@ jobs:
                   npm install
                   zip -r pivotiiii.Flow-Plugin.Yu-Gi-Oh-Search.zip . -x '*.git*'
             - name: Publish
-              uses: softprops/action-gh-release@v1
+              uses: softprops/action-gh-release@v2
               with:
                   files: "pivotiiii.Flow-Plugin.Yu-Gi-Oh-Search.zip"
                   tag_name: "v${{steps.version.outputs.prop}}"
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
