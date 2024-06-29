@@ -21,11 +21,12 @@
   },
   "homepage": "https://github.com/Tueska/flow_launcher_ygo",
   "engines": {
-		"node": ">=10.12.0"
-	},
+    "node": ">=10.12.0"
+  },
   "type": "module",
   "dependencies": {
     "open": "^10.1.0",
-    "sharp": "^0.33.4"
+    "sharp": "^0.33.4",
+    "win-screen-resolution": "^3.0.2"
   }
 }

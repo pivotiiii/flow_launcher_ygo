@@ -9,6 +9,7 @@ sharp.cache(false);
 const __dirname = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../");
 const cachePath = path.resolve(__dirname, "cache");
 const maxResults = 5;
+const cacheImageDimensions = Math.floor(getCurrentResolution().height / 20);
 
 const {method, parameters, settings} = JSON.parse(process.argv[2]);
 
@@ -115,8 +116,8 @@ async function cacheCardImg(url, id) {
 
         const bufferSmall = await sharp(cardPath)
             .resize({
-                width: 100,
-                height: 100,
+                width: cacheImageDimensions,
+                height: cacheImageDimensions,
                 fit: "contain",
                 background: {r: 0, g: 0, b: 0, alpha: 0},
             })
