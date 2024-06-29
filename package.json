@@ -1,32 +1,32 @@
 {
-  "name": "ygo-card-search",
-  "version": "1.0.0",
-  "description": "Plugin for Flow Launcher that searches for Yu-Gi-Oh! cards on ygoprodeck.com",
-  "main": "./src/main.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pivotiiii/flow_launcher_ygo.git"
-  },
-  "keywords": [
-    "flowlauncher",
-    "yugioh",
-    "card game"
-  ],
-  "author": {
-    "name": "pivotiiii",
-    "url": "https://pivotiiii.github.io"
-  },
-  "bugs": {
-    "url": "https://github.com/Tueska/flow_launcher_ygo/issues"
-  },
-  "homepage": "https://github.com/Tueska/flow_launcher_ygo",
-  "engines": {
-    "node": ">=10.12.0"
-  },
-  "type": "module",
-  "dependencies": {
-    "open": "^10.1.0",
-    "sharp": "^0.33.4",
-    "win-screen-resolution": "^3.0.2"
-  }
+    "name": "ygo-card-search",
+    "version": "1.1.0",
+    "description": "Plugin for Flow Launcher that searches for Yu-Gi-Oh! cards on ygoprodeck.com",
+    "main": "./src/main.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pivotiiii/flow_launcher_ygo.git"
+    },
+    "keywords": [
+        "flowlauncher",
+        "yugioh",
+        "card game"
+    ],
+    "author": {
+        "name": "pivotiiii",
+        "url": "https://pivotiiii.github.io"
+    },
+    "bugs": {
+        "url": "https://github.com/Tueska/flow_launcher_ygo/issues"
+    },
+    "homepage": "https://github.com/Tueska/flow_launcher_ygo",
+    "engines": {
+        "node": ">=10.12.0"
+    },
+    "type": "module",
+    "dependencies": {
+        "open": "^10.1.0",
+        "sharp": "^0.33.4",
+        "win-screen-resolution": "^3.0.2"
+    }
 }
