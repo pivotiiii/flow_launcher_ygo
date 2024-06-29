@@ -1,8 +1,11 @@
-import open from "../node_modules/open/index.js";
-import {writeFileSync, existsSync, mkdirSync} from "fs";
-import sharp from "../node_modules/sharp/lib/index.js";
+import {writeFileSync, existsSync, mkdirSync, rmSync, readdirSync} from "fs";
 import path from "path";
 import {fileURLToPath} from "url";
+
+import open from "../node_modules/open/index.js";
+import sharp from "../node_modules/sharp/lib/index.js";
+import {getCurrentResolution} from "win-screen-resolution";
+
 import {parseQuery} from "./parseQuery.js";
 
 sharp.cache(false);
@@ -15,15 +18,17 @@ const {method, parameters, settings} = JSON.parse(process.argv[2]);
 
 if (method === "query") {
     const query = parameters[0];
-    if (query.length < 3) {
+    if (query.length < 2) {
         console.log(JSON.stringify({result: []}));
+    } else if (query.startsWith(":cache")) {
+        showDeleteCache();
     } else {
         logCards(query);
     }
-}
-
-if (method === "openCard") {
+} else if (method === "open") {
     open(parameters[0]);
+} else if (method === "deleteCache") {
+    deleteCache();
 }
 
 async function getCards(query) {
@@ -73,17 +78,17 @@ async function logCards(query) {
         if (!existsSync(imagePath)) {
             imagePath = await cacheCardImg(card.img, card.id);
         }
-        results.result.push(getResult(card, imagePath));
+        results.result.push(getCardResult(card, imagePath));
     }
     console.log(JSON.stringify(results));
 }
 
-function getResult(card, imagePath) {
+function getCardResult(card, imagePath) {
     const result = {
         Title: card.name,
         Subtitle: "",
         JsonRPCAction: {
-            method: "openCard",
+            method: "open",
             parameters: [`${card.url}`],
         },
         IcoPath: imagePath,
@@ -129,6 +134,44 @@ async function cacheCardImg(url, id) {
         return cardPath;
     } catch (err) {
         return url;
+    }
+}
+
+function showDeleteCache() {
+    if (!existsSync(cachePath)) {
+        mkdirSync(cachePath);
+    }
+    console.log(
+        JSON.stringify({
+            result: [
+                {
+                    Title: "Delete Card Image Cache",
+                    Subtitle: `${readdirSync(cachePath).length} cards at ${cachePath}`,
+                    JsonRPCAction: {
+                        method: "deleteCache",
+                        parameters: [],
+                    },
+                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    score: 0,
+                },
+                {
+                    Title: "Open Card Image Cache",
+                    Subtitle: cachePath,
+                    JsonRPCAction: {
+                        method: "open",
+                        parameters: [cachePath],
+                    },
+                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    score: 10,
+                },
+            ],
+        })
+    );
+}
+
+function deleteCache() {
+    if (existsSync(cachePath)) {
+        rmSync(cachePath, {force: true, recursive: true});
     }
 }
 
