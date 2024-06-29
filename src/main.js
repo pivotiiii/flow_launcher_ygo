@@ -22,6 +22,8 @@ if (method === "query") {
         console.log(JSON.stringify({result: []}));
     } else if (query.startsWith(":cache")) {
         showDeleteCache();
+    } else if (query.startsWith(":help") || query.startsWith(":?")) {
+        showHelp();
     } else {
         logCards(query);
     }
@@ -173,6 +175,25 @@ function deleteCache() {
     if (existsSync(cachePath)) {
         rmSync(cachePath, {force: true, recursive: true});
     }
+}
+
+function showHelp() {
+    console.log(
+        JSON.stringify({
+            result: [
+                {
+                    Title: "Open Help",
+                    Subtitle: "",
+                    JsonRPCAction: {
+                        method: "open",
+                        parameters: ["https://github.com/pivotiiii/flow_launcher_ygo/blob/master/README.md"],
+                    },
+                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    score: 0,
+                },
+            ],
+        })
+    );
 }
 
 function getLang() {
