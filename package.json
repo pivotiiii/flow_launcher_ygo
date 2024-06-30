@@ -17,9 +17,9 @@
         "url": "https://pivotiiii.github.io"
     },
     "bugs": {
-        "url": "https://github.com/Tueska/flow_launcher_ygo/issues"
+        "url": "https://github.com/pivotiiii/flow_launcher_ygo/issues"
     },
-    "homepage": "https://github.com/Tueska/flow_launcher_ygo",
+    "homepage": "https://github.com/pivotiiii/flow_launcher_ygo",
     "engines": {
         "node": ">=10.12.0"
     },
