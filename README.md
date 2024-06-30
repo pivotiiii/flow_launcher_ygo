@@ -2,7 +2,7 @@
 
 This is a plugin for [Flow Launcher](https://www.flowlauncher.com) that searches [ygoprodeck.com](https://ygoprodeck.com) for cards.
 
-![readme1](https://github.com/pivotiiii/flow_launcher_ygo/assets/17112987/7f965228-12bd-4c4a-b874-6a6799494964)
+![readme3](https://github.com/pivotiiii/flow_launcher_ygo/assets/17112987/b761c97f-1ee5-4c0b-8d1b-6054552d1116)
 
 ## Installation
 
