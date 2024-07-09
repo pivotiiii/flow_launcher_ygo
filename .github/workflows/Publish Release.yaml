@@ -28,7 +28,7 @@ jobs:
             - name: Install dependencies
               run: |
                   npm install
-                  tar -a -c -f pivotiiii.Flow-Plugin.Yu-Gi-Oh-Search.zip --exclude *.git --exclude *.zip *
+                  tar -a -c -f pivotiiii.Flow-Plugin.Yu-Gi-Oh-Search.zip --exclude .git* --exclude *.zip *
             - name: Publish
               uses: softprops/action-gh-release@v2
               with:
