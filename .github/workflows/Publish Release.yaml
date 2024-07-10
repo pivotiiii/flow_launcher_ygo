@@ -3,9 +3,8 @@ name: Publish Release
 on:
     workflow_dispatch:
     push:
-        branches: [main]
-        paths-ignore:
-            - .github/workflows/*
+        tags:
+            - "*"
 
 jobs:
     publish:
