@@ -5,6 +5,7 @@ import {fileURLToPath} from "url";
 import open from "../node_modules/open/index.js";
 import sharp from "../node_modules/sharp/lib/index.js";
 import {getCurrentResolution} from "win-screen-resolution";
+import fetch from "node-fetch";
 
 import {parseQuery} from "./parseQuery.js";
 

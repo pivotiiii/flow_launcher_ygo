@@ -6,9 +6,9 @@ This is a plugin for [Flow Launcher](https://www.flowlauncher.com) that searches
 
 ## Installation
 
-This plugin can be installed using the Flow Launcher Plugin Store or directly from the Flow Launcher search bar by entering 
+This plugin can be installed using the Flow Launcher Plugin Store or directly from the Flow Launcher search bar by entering
 
-`pm install XXX`
+`pm install Yu-Gi-Oh! Card Search`
 
 ## Usage
 
@@ -16,14 +16,14 @@ The default keyword is `ygo`. Card results can be filtered by entering a colon `
 
 The possible filter keywords are:
 
-| Keyword | Possible Values |
-| --- | --- |
-| `:{level/rank/link rating}` | any number from `:0` to `:13` |
-| `:{card_type}` | `:spell`, `:trap`, `:monster`, `:normal`, `:effect`, `:ritual`, `:synchro`, `:xyz`, `:fusion`, `:link`, `:pendulum`, `:flip`, `:tuner`, `:union`, `:gemini`, `:spirit`, `:toon` |
-| `:{monster_attribute}` | `:light`, `:dark`, `:water`, `:fire`, `:wind`, `:earth`, `:divine` |
-| `:{monster_type}` | `:aqua`, `:beast`, `:beast-warrior`, `:cyberse`, `:dinosaur`, `:divine-beast`, `:dragon`, `:fairy`, `:fiend`, `:fish`, `:insect`, `:machine`, `:plant`, `:psychic`, `:pyro`, `:reptile`, `:rock`, `:sea-serpent`, `:spellcaster`, `:thunder`, `:warrior`, `:winged-beast`, `:wyrm`, `:zombie` |
-| `:atk{atk_value}` | any non-negative number, e.g. `:atk2300` or `:atk4000` |
-| `:def{def_value}` | any non-negative number, e.g. `:def2000` or `:def0` |
+| Keyword                     | Possible Values                                                                                                                                                                                                                                                                               |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `:{level/rank/link rating}` | any number from `:0` to `:13`                                                                                                                                                                                                                                                                 |
+| `:{card_type}`              | `:spell`, `:trap`, `:monster`, `:normal`, `:effect`, `:ritual`, `:synchro`, `:xyz`, `:fusion`, `:link`, `:pendulum`, `:flip`, `:tuner`, `:union`, `:gemini`, `:spirit`, `:toon`                                                                                                               |
+| `:{monster_attribute}`      | `:light`, `:dark`, `:water`, `:fire`, `:wind`, `:earth`, `:divine`                                                                                                                                                                                                                            |
+| `:{monster_type}`           | `:aqua`, `:beast`, `:beast-warrior`, `:cyberse`, `:dinosaur`, `:divine-beast`, `:dragon`, `:fairy`, `:fiend`, `:fish`, `:insect`, `:machine`, `:plant`, `:psychic`, `:pyro`, `:reptile`, `:rock`, `:sea-serpent`, `:spellcaster`, `:thunder`, `:warrior`, `:winged-beast`, `:wyrm`, `:zombie` |
+| `:atk{atk_value}`           | any non-negative number, e.g. `:atk2300` or `:atk4000`                                                                                                                                                                                                                                        |
+| `:def{def_value}`           | any non-negative number, e.g. `:def2000` or `:def0`                                                                                                                                                                                                                                           |
 
 All filter values are case insensitive. Card type filters can be combined to further narrow down the search results.
 
@@ -31,9 +31,9 @@ All filter values are case insensitive. Card type filters can be combined to fur
 
 Available meta commands are:
 
-| Keyword | Explanation |
-| --- | --- |
-| `:help` | Open this README page. |
+| Keyword  | Explanation                               |
+| -------- | ----------------------------------------- |
+| `:help`  | Open this README page.                    |
 | `:cache` | Open or delete the image cache directory. |
 
 Images for the search preview are cached to prevent excessive load on the ygoprodeck API :)
