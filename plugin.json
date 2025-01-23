@@ -4,7 +4,7 @@
     "Name": "Yu-Gi-Oh! card search",
     "Description": "Searches for Yu-Gi-Oh! cards on ygoprodeck.com",
     "Author": "pivotiiii",
-    "Version": "1.1.1",
+    "Version": "1.1.2",
     "Language": "JavaScript",
     "Website": "https://github.com/pivotiiii/flow_launcher_ygo",
     "ExecuteFileName": "src\\main.js",
