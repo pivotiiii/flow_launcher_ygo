@@ -15,6 +15,13 @@ const cachePath = path.resolve(__dirname, "cache");
 const maxResults = 5;
 const cacheImageDimensions = Math.floor(getCurrentResolution().height / 20);
 
+const MDRaritiesMap = {
+    Common: "C",
+    Rare: "R",
+    "Super Rare": "SR",
+    "Ultra Rare": "UR",
+};
+
 const {method, parameters, settings} = JSON.parse(process.argv[2]);
 
 if (method === "query") {
@@ -39,8 +46,9 @@ async function getCards(query) {
     const [apiUrlQuery, apiUrlOptions] = parseQuery(query);
     let apiUrlLang = getLang();
     const apiUrlNum = `&num=${maxResults}&offset=0`;
+    const apiUrlMisc = settings.showMDRarity === true ? "&misc=yes" : "";
 
-    const apiUrl = apiUrlBase + apiUrlQuery + apiUrlOptions + apiUrlLang + apiUrlNum;
+    const apiUrl = apiUrlBase + apiUrlQuery + apiUrlOptions + apiUrlLang + apiUrlNum + apiUrlMisc;
     //console.log(apiUrl);
 
     const response = await fetch(apiUrl);
@@ -53,6 +61,7 @@ async function getCards(query) {
     const cards = [];
 
     responseJson["data"].forEach(function (card) {
+        const saveMDRarity = settings.showMDRarity === true && "md_rarity" in card["misc_info"][0];
         cards.push({
             name: card["name"],
             type: card["type"],
@@ -65,6 +74,7 @@ async function getCards(query) {
             url: card["ygoprodeck_url"],
             img: card["card_images"][0]["image_url_small"],
             id: card["id"],
+            md_rarity: saveMDRarity === true ? card["misc_info"][0]["md_rarity"] : undefined,
         });
     });
 
@@ -104,6 +114,10 @@ function getCardResult(card, imagePath) {
         result.Subtitle = `${card.type.includes("XYZ") ? "Rank" : "Level"} ${card.level} ${card.attribute} ${card.race} ${card.type} | ATK:${card.atk} DEF:${card.def}`;
     } else if (card.type.includes("Trap") || card.type.includes("Spell")) {
         result.Subtitle = `${card.race} ${card.type}`;
+    }
+
+    if (card.md_rarity !== undefined) {
+        result.Subtitle = `(${MDRaritiesMap[card.md_rarity] || "?"}) | ${result.Subtitle}`;
     }
 
     return result;

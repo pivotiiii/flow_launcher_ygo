@@ -11,6 +11,11 @@ body:
               - German
               - Portuguese
               - Italian
+    - type: checkbox
+      attributes:
+          name: showMDRarity
+          label: Show Master Duel Rarity
+          defaultValue: "false"
     - type: textBlock
       attributes:
           description: >-
