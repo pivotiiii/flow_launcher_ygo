@@ -28,8 +28,10 @@ jobs:
               run: npm install
             - name: Build
               run: npm run build
+            - name: Install only production dependencies
+              run: npm install --production
             - name: Package Plugin
-              run: tar -a -c -f pivotiiii.Flow-Plugin.Yu-Gi-Oh-Search.zip dist node_modules img README.md plugin.json SettingsTemplate.yaml
+              run: tar -a -c -f pivotiiii.Flow-Plugin.Yu-Gi-Oh-Search.zip dist node_modules img README.md package* plugin.json SettingsTemplate.yaml
             - name: Publish
               uses: softprops/action-gh-release@v2
               with:
