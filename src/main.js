@@ -43,7 +43,7 @@ if (method === "query") {
 
 async function getCards(query) {
     const apiUrlBase = "https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=";
-    const [apiUrlQuery, apiUrlOptions] = parseQuery(query);
+    const { query: apiUrlQuery, options: apiUrlOptions } = parseQuery(query);
     let apiUrlLang = getLang();
     const apiUrlNum = `&num=${maxResults}&offset=0`;
     const apiUrlMisc = settings.showMDRarity === true ? "&misc=yes" : "";

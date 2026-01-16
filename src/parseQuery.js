@@ -1,25 +1,36 @@
-const cardTypesSingle = [
-    "spell", //
-    "trap",
-    "link",
-    "union",
-    "gemini",
-    "spirit",
-    "toon",
-];
+const NO_CARDS = "&type=link%20monster&def=1";
 
-const cardTypesComb = [
-    "monster", //
-    "normal",
-    "effect",
-    "ritual",
-    "synchro",
-    "xyz",
-    "fusion",
-    "pendulum",
-    "flip",
-    "tuner",
-];
+const cardTypes = {
+    pendulum: [
+        "Pendulum Effect Monster",
+        "Pendulum Normal Monster",
+        "Pendulum Tuner Effect Monster",
+        "Pendulum Flip Effect Monster",
+        "Pendulum Effect Fusion Monster",
+        "Pendulum Effect Ritual Monster",
+        "Synchro Pendulum Effect Monster",
+        "XYZ Pendulum Effect Monster",
+    ],
+    ritual: ["Ritual Monster", "Ritual Effect Monster", "Pendulum Effect Ritual Monster"],
+    fusion: ["Fusion Monster", "Pendulum Effect Fusion Monster"],
+    synchro: ["Synchro Monster", "Synchro Tuner Monster", "Synchro Pendulum Effect Monster"],
+    xyz: ["XYZ Monster", "XYZ Pendulum Effect Monster"],
+    flip: ["Flip Tuner Effect Monster", "Flip Effect Monster", "Pendulum Flip Effect Monster"],
+    tuner: ["Flip Tuner Effect Monster", "Normal Tuner Monster", "Pendulum Tuner Effect Monster", "Tuner Monster", "Synchro Tuner Monster"],
+    normal: ["Normal Monster", "Normal Tuner Monster", "Pendulum Normal Monster"],
+    spell: ["Spell Card"],
+    trap: ["Trap Card"],
+    link: ["Link Monster"],
+    union: ["Union Effect Monster"],
+    gemini: ["Gemini Monster"],
+    spirit: ["Spirit Monster"],
+    toon: ["Toon Monster"],
+};
+
+const cardTypesSpecial = {
+    monster: "&atk=gte0", // excludes some cards with "???" atk, -1 in the api result
+    effect: "&has_effect=1&atk=gte0",
+};
 
 const attributes = [
     "light", //
@@ -30,7 +41,7 @@ const attributes = [
     "earth",
     "divine",
 ];
-const types = [
+const races = [
     "aqua",
     "beast",
     "beast-warrior",
@@ -41,6 +52,7 @@ const types = [
     "fairy",
     "fiend",
     "fish",
+    "illusion",
     "insect",
     "machine",
     "plant",
@@ -55,221 +67,140 @@ const types = [
     "winged-beast", //needs special handling
     "wyrm",
     "zombie",
+    // "normal", // this is a lot of trouble with also being a card type
+    "field",
+    "equip",
+    "continuous",
+    "quick-play",
+    // "ritual", // this is a lot of trouble with also being a card type
+    "counter",
 ];
+
+const racesSpecial = {
+    "sea-serpent": "Sea%20Serpent",
+    "winged-beast": "Winged%20Beast",
+};
 
 export function parseQuery(query) {
     let optionsArray = [];
     let queryArray = [];
 
-    let hasAtk = false;
-    let hasDef = false;
+    let cardTypesSet = new Set();
+    let cardTypesSpecialSet = new Set();
+    let number = null;
+    let atk = null;
+    let def = null;
+    let attribute = null;
+    let race = null;
 
-    let hasSingleCardType = false;
+    let potentialNormal = false;
+    let potentialRitual = false;
 
-    let hasCombCardType = false;
-    let hasMonsterCardType = false;
-    let normalCardType = false;
-    let effectCardType = false;
-    let flipCardType = false;
-    let tunerCardType = false;
-    let ritualCardType = false;
-    let pendulumCardType = false;
-    let fusionCardType = false;
-    let synchroCardType = false;
-    let xyzCardType = false;
-
-    let hasMonsterAttribute = false;
-    let hasMonsterType = false;
-
-    let hasLink = false;
-    let hasNum = false;
-    let num = null;
-
-    const querySplit = query.split(" ");
-    for (let idx in querySplit) {
-        let text = querySplit[idx];
-        if (text.startsWith(":")) {
-            text = text.slice(1).toLowerCase();
-
-            if (text.length >= 4) {
-                //shortest attribute or type or atk/def value (atkX) or singleCardType
-                switch (true) {
-                    case !hasAtk && text.slice(0, 3) === "atk" && !isNaN(parseInt(text.slice(3))):
-                        hasAtk = true;
-                        optionsArray.push(parseInt(text.slice(3)));
-                        break;
-                    case !hasDef && text.slice(0, 3) === "def" && !isNaN(parseInt(text.slice(3))):
-                        hasDef = true;
-                        optionsArray.push(parseInt(text.slice(3)));
-                        break;
-                    case !hasMonsterAttribute && attributes.includes(text):
-                        hasMonsterAttribute = true;
-                        optionsArray.push(`&attribute=${text}`);
-                        break;
-                    case !hasMonsterType && types.includes(text):
-                        hasMonsterType = true;
-                        switch (text) {
-                            case "sea-serpent":
-                                optionsArray.push("&race=Sea%20Serpent");
-                                break;
-                            case "winged-beast":
-                                optionsArray.push("&race=Winged%20Beast");
-                                break;
-                            default:
-                                optionsArray.push(`&race=${text}`);
-                                break;
-                        }
-                        break;
-                    case !hasSingleCardType && cardTypesSingle.includes(text):
-                        hasSingleCardType = true;
-                        switch (text) {
-                            case "spell":
-                                optionsArray.push("&type=Spell%20Card");
-                                break;
-                            case "trap":
-                                optionsArray.push("&type=Trap%20Card");
-                                break;
-                            case "union":
-                                optionsArray.push("&type=Union%20Effect%20Monster");
-                                break;
-                            case "link":
-                                hasLink = true;
-                                optionsArray.push("&type=Link%20Monster");
-                                break;
-                            default:
-                                optionsArray.push(`&type=${text}%20Monster`);
-                                break;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if (!hasSingleCardType && text.length >= 3 && cardTypesComb.includes(text)) {
-                hasCombCardType = true;
-                switch (text) {
-                    case "monster":
-                        hasMonsterCardType = true;
-                        break;
-                    case "normal":
-                        normalCardType = true;
-                        break;
-                    case "effect":
-                        effectCardType = true;
-                        break;
-                    case "flip":
-                        flipCardType = true;
-                        break;
-                    case "tuner":
-                        tunerCardType = true;
-                        break;
-                    case "ritual":
-                        ritualCardType = true;
-                        break;
-                    case "pendulum":
-                        pendulumCardType = true;
-                        break;
-                    case "fusion":
-                        fusionCardType = true;
-                        break;
-                    case "synchro":
-                        synchroCardType = true;
-                        break;
-                    case "xyz":
-                        xyzCardType = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if (!hasNum && !isNaN(parseInt(text))) {
-                hasNum = true;
-                num = parseInt(text);
-            }
-        } else {
+    const querySplit = query.toLowerCase().split(" ");
+    for (let text of querySplit) {
+        if (!text.startsWith(":")) {
             queryArray.push(text);
+            continue;
+        }
+        if (text.startsWith(":")) {
+            text = text.slice(1);
+
+            if (!isNaN(parseInt(text))) {
+                number = parseInt(text);
+                continue;
+            }
+
+            //shortest attribute or type or atk/def value (atkX) or singleCardType
+            if (text.length >= 3) {
+                if (text === "normal") {
+                    potentialNormal = true;
+                } else if (text === "ritual") {
+                    potentialRitual = true;
+                }
+
+                switch (true) {
+                    case text.slice(0, 3) === "atk" && !isNaN(parseInt(text.slice(3))):
+                        atk = parseInt(text.slice(3));
+                        continue;
+                    case text.slice(0, 3) === "def" && !isNaN(parseInt(text.slice(3))):
+                        def = parseInt(text.slice(3));
+                        continue;
+                    case attributes.includes(text):
+                        attribute = text;
+                        continue;
+                    case text in cardTypesSpecial:
+                        cardTypesSpecialSet.add(text);
+                        continue;
+                    case text in cardTypes:
+                        cardTypesSet.add(text);
+                        continue;
+                    case races.includes(text): // must be after card types to avoid confusion with "normal" and "ritual"
+                        race = text;
+                        continue;
+                }
+            }
         }
     }
 
-    if (hasLink && hasNum) {
-        optionsArray.push(`&link=${num}`);
-    } else if (hasNum) {
-        optionsArray.push(`&level=${num}`);
+    if (atk !== null) {
+        optionsArray.push(`&atk=${atk}`);
+    }
+    if (def !== null) {
+        optionsArray.push(`&def=${def}`);
+    }
+    if (attribute !== null) {
+        optionsArray.push(`&attribute=${attribute}`);
+    }
+    if (race !== null) {
+        optionsArray.push(`&race=${racesSpecial[race] || race}`);
     }
 
-    if (normalCardType && !effectCardType) {
-        optionsArray.push("&has_effect=0&atk=gte0");
-    } else if (effectCardType && !normalCardType) {
-        optionsArray.push("&has_effect=1&atk=gte0");
-    } else if (hasMonsterCardType) {
-        optionsArray.push("&atk=gte0");
+    if (cardTypesSet.has("link") && number !== null) {
+        optionsArray.push(`&link=${number}`);
+    } else if (number !== null) {
+        optionsArray.push(`&level=${number}`);
     }
 
-    if (!hasSingleCardType && hasCombCardType) {
-        switch (true) {
-            case pendulumCardType && ritualCardType:
-                optionsArray.push("&type=Pendulum%20Effect%20Ritual%20Monster");
-                break;
-            case pendulumCardType && flipCardType:
-                optionsArray.push("&type=Pendulum%20Flip%20Effect%20Monster");
-                break;
-            case pendulumCardType && tunerCardType:
-                optionsArray.push("&type=Pendulum%20Tuner%20Effect%20Monster");
-                break;
-            case pendulumCardType && normalCardType:
-                optionsArray.push("&type=Pendulum%20Normal%20Monster");
-                break;
-            case pendulumCardType && fusionCardType:
-                optionsArray.push("&type=Pendulum%20Effect%20Fusion%20Monster");
-                break;
-            case pendulumCardType && synchroCardType:
-                optionsArray.push("&type=Synchro%20Pendulum%20Effect%20Monster");
-                break;
-            case pendulumCardType && xyzCardType:
-                optionsArray.push("&type=XYZ%20Pendulum%20Effect%20Monster");
-                break;
-            case pendulumCardType:
-                optionsArray.push("&scale=gte0");
-                break;
-            case ritualCardType:
-                optionsArray.push("&type=Ritual%20Monster%2CRitual%20Effect%20Monster%2CPendulum%20Effect%20Ritual%20Monster");
-                break;
-            case fusionCardType:
-                optionsArray.push("&type=Fusion%20Monster%2CPendulum%20Effect%20Fusion%20Monster");
-                break;
-            case synchroCardType && tunerCardType:
-                optionsArray.push("&type=Synchro%20Tuner%20Monster");
-                break;
-            case synchroCardType:
-                optionsArray.push("&type=Synchro%20Monster%2CSynchro%20Tuner%20Monster%2CSynchro%20Pendulum%20Effect%20Monster");
-                break;
-            case xyzCardType:
-                optionsArray.push("&type=XYZ%20Monster%2CXYZ%20Pendulum%20Effect%20Monster");
-                break;
-            case flipCardType && tunerCardType:
-                optionsArray.push("&type=Flip%20Tuner%20Effect%20Monster");
-                break;
-            case flipCardType:
-                optionsArray.push("&type=Flip%20Tuner%20Effect%20Monster%2CFlip%20Effect%20Monster%2CPendulum%20Flip%20Effect%20Monster");
-                break;
-            case tunerCardType:
-                optionsArray.push("&type=Flip%20Tuner%20Effect%20Monster%2CNormal%20Tuner%20Monster%2CPendulum%20Tuner%20Effect%20Monster%2CTuner%20Monster%2CSynchro%20Tuner%20Monster");
-                break;
-            case normalCardType:
-                optionsArray.push("&type=Normal%20Monster%2CNormal%20Tuner%20Monster%2CPendulum%20Normal%20Monster");
-                break;
-            default:
-                break;
+    if ((cardTypesSet.has("spell") || cardTypesSet.has("trap")) && potentialNormal) {
+        cardTypesSet.delete("normal");
+        optionsArray.push("&race=normal");
+    }
+    if (cardTypesSet.has("spell") && potentialRitual) {
+        cardTypesSet.delete("ritual");
+        optionsArray.push("&race=ritual");
+    }
+
+    if (!cardTypesSet.has("spell") && !cardTypesSet.has("trap")) {
+        if (cardTypesSet.has("normal") && !cardTypesSpecialSet.has("effect")) {
+            optionsArray.push("&has_effect=0&atk=gte0");
+        } else if (cardTypesSpecialSet.has("effect") && !cardTypesSet.has("normal")) {
+            optionsArray.push("&has_effect=1&atk=gte0");
+        } else if (cardTypesSet.has("normal") && cardTypesSpecialSet.has("effect")) {
+            optionsArray.push(NO_CARDS);
         }
     }
 
-    const apiUrlOptions = optionsArray.join("");
-    const apiUrlQuery = queryArray.join("%20");
+    if (cardTypesSpecialSet.size > 0) {
+        for (const type of cardTypesSpecialSet) {
+            optionsArray.push(cardTypesSpecial[type]);
+        }
+    }
 
-    //console.log(optionsArray);
-    //console.log(apiUrlOptions);
-    //console.log(queryArray);
-    //console.log(apiUrlQuery);
+    if (cardTypesSet.size > 0) {
+        let lists = [];
+        for (const type of cardTypesSet) {
+            lists.push(cardTypes[type]);
+        }
+        const common = lists.reduce((a, b) => a.filter((c) => b.includes(c)));
+        if (common.length > 0) {
+            optionsArray.push(`&type=${encodeURIComponent(common.join(","))}`);
+        } else {
+            optionsArray.push(NO_CARDS);
+        }
+    }
 
-    return [apiUrlQuery, apiUrlOptions];
+    const apiUrlOptions = optionsArray.join("").toLowerCase();
+    const apiUrlQuery = queryArray.join("%20").toLowerCase();
+
+    return {query: apiUrlQuery, options: apiUrlOptions};
 }
