@@ -1,5 +1,10 @@
 const NO_CARDS = "&type=link%20monster&def=1";
 
+export interface ParseQueryResult {
+    query: string;
+    options: string;
+}
+
 const cardTypes = {
     pendulum: [
         "Pendulum Effect Monster",
@@ -81,17 +86,17 @@ const racesSpecial = {
     "winged-beast": "Winged%20Beast",
 };
 
-export function parseQuery(query) {
-    let optionsArray = [];
-    let queryArray = [];
+export function parseQuery(query: string): ParseQueryResult {
+    let optionsArray: string[] = [];
+    let queryArray: string[] = [];
 
-    let cardTypesSet = new Set();
-    let cardTypesSpecialSet = new Set();
-    let number = null;
-    let atk = null;
-    let def = null;
-    let attribute = null;
-    let race = null;
+    let cardTypesSet = new Set<string>();
+    let cardTypesSpecialSet = new Set<string>();
+    let number: number | null = null;
+    let atk: number | null = null;
+    let def: number | null = null;
+    let attribute: string | null = null;
+    let race: string | null = null;
 
     let potentialNormal = false;
     let potentialRitual = false;
@@ -152,7 +157,7 @@ export function parseQuery(query) {
         optionsArray.push(`&attribute=${attribute}`);
     }
     if (race !== null) {
-        optionsArray.push(`&race=${racesSpecial[race] || race}`);
+        optionsArray.push(`&race=${racesSpecial[race as keyof typeof racesSpecial] || race}`);
     }
 
     if (cardTypesSet.has("link") && number !== null) {
@@ -182,16 +187,16 @@ export function parseQuery(query) {
 
     if (cardTypesSpecialSet.size > 0) {
         for (const type of cardTypesSpecialSet) {
-            optionsArray.push(cardTypesSpecial[type]);
+            optionsArray.push(cardTypesSpecial[type as keyof typeof cardTypesSpecial]);
         }
     }
 
     if (cardTypesSet.size > 0) {
-        let lists = [];
+        let lists: string[][] = [];
         for (const type of cardTypesSet) {
-            lists.push(cardTypes[type]);
+            lists.push(cardTypes[type as keyof typeof cardTypes]);
         }
-        const common = lists.reduce((a, b) => a.filter((c) => b.includes(c)));
+        const common = lists.reduce((a, b) => a.filter((c: string) => b.includes(c)));
         if (common.length > 0) {
             optionsArray.push(`&type=${encodeURIComponent(common.join(","))}`);
         } else {

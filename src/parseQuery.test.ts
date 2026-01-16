@@ -1,4 +1,4 @@
-import {parseQuery} from "./parseQuery.js";
+import {parseQuery} from "./parseQuery";
 
 describe("parseQuery", () => {
     describe("basic query parsing", () => {

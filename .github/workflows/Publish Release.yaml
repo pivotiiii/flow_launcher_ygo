@@ -25,9 +25,11 @@ jobs:
                   prop_path: "Version"
             - run: echo ${{steps.version.outputs.prop}}
             - name: Install dependencies
-              run: |
-                  npm install
-                  tar -a -c -f pivotiiii.Flow-Plugin.Yu-Gi-Oh-Search.zip --exclude .git* --exclude *.zip *
+              run: npm install
+            - name: Build
+              run: npm run build
+            - name: Package Plugin
+              run: tar -a -c -f pivotiiii.Flow-Plugin.Yu-Gi-Oh-Search.zip dist node_modules img README.md plugin.json SettingsTemplate.yaml
             - name: Publish
               uses: softprops/action-gh-release@v2
               with:
