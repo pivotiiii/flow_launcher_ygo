@@ -16,16 +16,20 @@ The default keyword is `ygo`. Card results can be filtered by entering a colon `
 
 The possible filter keywords are:
 
-| Keyword                     | Possible Values                                                                                                                                                                                                                                                                               |
+| Keyword | Possible Values |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `:{level/rank/link rating}` | any number from `:0` to `:13`                                                                                                                                                                                                                                                                 |
-| `:{card_type}`              | `:spell`, `:trap`, `:monster`, `:normal`, `:effect`, `:ritual`, `:synchro`, `:xyz`, `:fusion`, `:link`, `:pendulum`, `:flip`, `:tuner`, `:union`, `:gemini`, `:spirit`, `:toon`                                                                                                               |
-| `:{monster_attribute}`      | `:light`, `:dark`, `:water`, `:fire`, `:wind`, `:earth`, `:divine`                                                                                                                                                                                                                            |
+| `:{level/rank/link rating}` | any number from `:0` to `:13` |
+| `:{card_type}`              | `:spell`, `:trap`, `:monster`, `:normal`, `:effect`, `:ritual`, `:synchro`, `:xyz`, `:fusion`, `:link`, `:pendulum`, `:flip`, `:tuner`, `:union`, `:gemini`, `:spirit`, `:toon` |
+| `:{monster_attribute}`      | `:light`, `:dark`, `:water`, `:fire`, `:wind`, `:earth`, `:divine` |
 | `:{monster_type}`           | `:aqua`, `:beast`, `:beast-warrior`, `:cyberse`, `:dinosaur`, `:divine-beast`, `:dragon`, `:fairy`, `:fiend`, `:fish`, `:insect`, `:machine`, `:plant`, `:psychic`, `:pyro`, `:reptile`, `:rock`, `:sea-serpent`, `:spellcaster`, `:thunder`, `:warrior`, `:winged-beast`, `:wyrm`, `:zombie` |
-| `:atk{atk_value}`           | any non-negative number, e.g. `:atk2300` or `:atk4000`                                                                                                                                                                                                                                        |
-| `:def{def_value}`           | any non-negative number, e.g. `:def2000` or `:def0`                                                                                                                                                                                                                                           |
+|`:{spell_type}`|`normal`, `continuous`, `quick-play`, `field`, `equip`, `ritual`|
+|`:{trap_type}`|`normal`, `continuous`, `counter`|
+| `:atk{atk_value}` | any non-negative number or `?`, e.g. `:atk2300` or `:atk4000` or `:atk?` |
+| `:def{def_value}` | any non-negative number or `?`, e.g. `:def2000` or `:def0` or `def???` |
 
-All filter values are case insensitive. Card type filters can be combined to further narrow down the search results.
+- All filter values are case insensitive. 
+- Card type filters can be combined to further narrow down the search results. 
+- To search for normal spells/traps or ritual spells you need to use `:spell :normal`, `:trap :normal` and `:spell :ritual` since `:normal` and `:ritual` search for the corresponding monster type otherwise.
 
 ![readme2](https://github.com/pivotiiii/flow_launcher_ygo/assets/17112987/09916600-13a8-440d-bf75-b90fbb369997)
 

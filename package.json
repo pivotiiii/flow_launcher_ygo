@@ -1,6 +1,6 @@
 {
     "name": "ygo-card-search",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Plugin for Flow Launcher that searches for Yu-Gi-Oh! cards on ygoprodeck.com",
     "main": "./dist/main.js",
     "repository": {

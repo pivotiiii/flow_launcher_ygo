@@ -10,13 +10,6 @@ import {cachePath, deleteCache} from "./imageCache.js";
 
 const __dirname = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../");
 
-const MDRaritiesMap = {
-    Common: "C",
-    Rare: "R",
-    "Super Rare": "SR",
-    "Ultra Rare": "UR",
-};
-
 interface FLResponse {
     result: Array<FLResult>;
 }
@@ -60,7 +53,15 @@ async function showCards(query: string) {
     const results: FLResponse = {result: []};
 
     const parsedQuery: ParseQueryResult = parseQuery(query);
+    if (parsedQuery.options.includes("type=link%20monster&def=1")) {
+        showInvalidQuery();
+        return;
+    }
     const cards: Array<Card> = await getCardsFromApi(parsedQuery.query, parsedQuery.options, settings.language, settings.showMDRarity);
+    if (cards.length === 0) {
+        showInvalidQuery();
+        return;
+    }
 
     for (const card of cards) {
         results.result.push(makeCardResult(card));
@@ -88,11 +89,29 @@ function makeCardResult(card: Card) {
         result.Subtitle = `${card.race} ${card.type}`;
     }
 
-    if (card.md_rarity !== undefined) {
-        result.Subtitle = `(${MDRaritiesMap[card.md_rarity as keyof typeof MDRaritiesMap] || "?"}) | ${result.Subtitle}`;
+    if (settings.showMDRarity === true) {
+        result.Subtitle = `(${card.md_rarity ?? "?"}) | ${result.Subtitle}`;
     }
 
     return result;
+}
+
+function showInvalidQuery() {
+    const response: FLResponse = {
+        result: [
+            {
+                Title: "No Results",
+                Subtitle: "",
+                JsonRPCAction: {
+                    method: "",
+                    parameters: [],
+                },
+                IcoPath: path.resolve(__dirname, "img", "app.png"),
+                score: 0,
+            },
+        ],
+    };
+    console.log(JSON.stringify(response));
 }
 
 function showDeleteCache() {

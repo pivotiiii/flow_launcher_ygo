@@ -24,8 +24,8 @@ interface ApiResponseCard {
 export interface Card {
     name: string;
     type: string;
-    atk: number;
-    def: number;
+    atk: number | "?";
+    def: number | "?";
     level: number;
     attribute: string;
     race: string;
@@ -33,7 +33,7 @@ export interface Card {
     url: string;
     img: string;
     id: number;
-    md_rarity: string | undefined;
+    md_rarity: (typeof MDRaritiesMap)[keyof typeof MDRaritiesMap] | null;
 }
 
 export const LanguageMap = {
@@ -42,6 +42,13 @@ export const LanguageMap = {
     German: "&language=de",
     Portuguese: "&language=pt",
     Italian: "&language=it",
+};
+
+const MDRaritiesMap = {
+    Common: "C",
+    Rare: "R",
+    "Super Rare": "SR",
+    "Ultra Rare": "UR",
 };
 
 const maxResults = 5;
@@ -72,16 +79,19 @@ export async function getCardsFromApi(apiUrlQuery: string, apiUrlOptions: string
 }
 
 async function mapApiCardToObjCard(cardApiData: ApiResponseCard, showMDRarity: boolean): Promise<Card> {
-    let saveMDRarity = false;
+    let shortRarity: (typeof MDRaritiesMap)[keyof typeof MDRaritiesMap] | null = null;
     if (showMDRarity === true && cardApiData["misc_info"][0] && "md_rarity" in cardApiData["misc_info"][0]) {
-        saveMDRarity = true;
+        const apiRarity = cardApiData["misc_info"][0]["md_rarity"];
+        if (apiRarity in MDRaritiesMap) {
+            shortRarity = MDRaritiesMap[apiRarity as keyof typeof MDRaritiesMap];
+        }
     }
     const img_path = await getCachedImage(cardApiData["card_images"][0]!["image_url_small"], cardApiData["id"]);
     return {
         name: cardApiData["name"],
         type: cardApiData["type"],
-        atk: cardApiData["atk"],
-        def: cardApiData["def"],
+        atk: cardApiData["atk"] === -1 ? "?" : cardApiData["atk"],
+        def: cardApiData["def"] === -1 ? "?" : cardApiData["def"],
         level: cardApiData["level"],
         attribute: cardApiData["attribute"],
         race: cardApiData["race"],
@@ -89,6 +99,6 @@ async function mapApiCardToObjCard(cardApiData: ApiResponseCard, showMDRarity: b
         url: cardApiData["ygoprodeck_url"],
         img: img_path,
         id: cardApiData["id"],
-        md_rarity: saveMDRarity === true ? cardApiData["misc_info"][0]!["md_rarity"] : undefined,
+        md_rarity: shortRarity,
     };
 }

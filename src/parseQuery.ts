@@ -1,9 +1,9 @@
-const NO_CARDS = "&type=link%20monster&def=1";
-
 export interface ParseQueryResult {
     query: string;
     options: string;
 }
+
+const NO_CARDS: ParseQueryResult = {query: "", options: "&type=link%20monster&def=1"};
 
 const cardTypes = {
     pendulum: [
@@ -30,11 +30,15 @@ const cardTypes = {
     gemini: ["Gemini Monster"],
     spirit: ["Spirit Monster"],
     toon: ["Toon Monster"],
+    monster: Array<string>(),
 };
+const _CT_monster_temp = new Set(Object.values(cardTypes).flat());
+_CT_monster_temp.delete("Spell Card");
+_CT_monster_temp.delete("Trap Card");
+cardTypes.monster = Array.from(_CT_monster_temp);
 
 const cardTypesSpecial = {
-    monster: "&atk=gte0", // excludes some cards with "???" atk, -1 in the api result
-    effect: "&has_effect=1&atk=gte0",
+    effect: "&has_effect=1&atk=gte0", // excludes some monsters with ??? atk, -1 in the api
 };
 
 const attributes = [
@@ -98,8 +102,8 @@ export function parseQuery(query: string): ParseQueryResult {
     let attribute: string | null = null;
     let race: string | null = null;
 
-    let potentialNormal = false;
-    let potentialRitual = false;
+    let potentialNormalST = false;
+    let potentialRitualSp = false;
 
     const querySplit = query.toLowerCase().split(" ");
     for (let text of querySplit) {
@@ -111,6 +115,7 @@ export function parseQuery(query: string): ParseQueryResult {
             text = text.slice(1);
 
             if (!isNaN(parseInt(text))) {
+                if (number !== null) return NO_CARDS;
                 number = parseInt(text);
                 continue;
             }
@@ -118,19 +123,30 @@ export function parseQuery(query: string): ParseQueryResult {
             //shortest attribute or type or atk/def value (atkX) or singleCardType
             if (text.length >= 3) {
                 if (text === "normal") {
-                    potentialNormal = true;
+                    potentialNormalST = true;
                 } else if (text === "ritual") {
-                    potentialRitual = true;
+                    potentialRitualSp = true;
                 }
 
                 switch (true) {
                     case text.slice(0, 3) === "atk" && !isNaN(parseInt(text.slice(3))):
+                        if (atk !== null) return NO_CARDS;
                         atk = parseInt(text.slice(3));
                         continue;
+                    case text.slice(0, 3) === "atk" && /^\?+$/.test(text.slice(3)):
+                        if (atk !== null) return NO_CARDS;
+                        atk = -1;
+                        continue;
                     case text.slice(0, 3) === "def" && !isNaN(parseInt(text.slice(3))):
+                        if (def !== null) return NO_CARDS;
                         def = parseInt(text.slice(3));
                         continue;
+                    case text.slice(0, 3) === "def" && /^\?+$/.test(text.slice(3)):
+                        if (def !== null) return NO_CARDS;
+                        def = -1;
+                        continue;
                     case attributes.includes(text):
+                        if (attribute !== null) return NO_CARDS;
                         attribute = text;
                         continue;
                     case text in cardTypesSpecial:
@@ -140,6 +156,7 @@ export function parseQuery(query: string): ParseQueryResult {
                         cardTypesSet.add(text);
                         continue;
                     case races.includes(text): // must be after card types to avoid confusion with "normal" and "ritual"
+                        if (race !== null) return NO_CARDS;
                         race = text;
                         continue;
                 }
@@ -148,10 +165,18 @@ export function parseQuery(query: string): ParseQueryResult {
     }
 
     if (atk !== null) {
-        optionsArray.push(`&atk=${atk}`);
+        if (atk === -1) {
+            optionsArray.push("&atk=lt0");
+        } else {
+            optionsArray.push(`&atk=${atk}`);
+        }
     }
     if (def !== null) {
-        optionsArray.push(`&def=${def}`);
+        if (def === -1) {
+            optionsArray.push("&def=lt0");
+        } else {
+            optionsArray.push(`&def=${def}`);
+        }
     }
     if (attribute !== null) {
         optionsArray.push(`&attribute=${attribute}`);
@@ -166,22 +191,18 @@ export function parseQuery(query: string): ParseQueryResult {
         optionsArray.push(`&level=${number}`);
     }
 
-    if ((cardTypesSet.has("spell") || cardTypesSet.has("trap")) && potentialNormal) {
+    if ((cardTypesSet.has("spell") || cardTypesSet.has("trap")) && potentialNormalST) {
         cardTypesSet.delete("normal");
         optionsArray.push("&race=normal");
     }
-    if (cardTypesSet.has("spell") && potentialRitual) {
+    if (cardTypesSet.has("spell") && potentialRitualSp) {
         cardTypesSet.delete("ritual");
         optionsArray.push("&race=ritual");
     }
 
     if (!cardTypesSet.has("spell") && !cardTypesSet.has("trap")) {
-        if (cardTypesSet.has("normal") && !cardTypesSpecialSet.has("effect")) {
-            optionsArray.push("&has_effect=0&atk=gte0");
-        } else if (cardTypesSpecialSet.has("effect") && !cardTypesSet.has("normal")) {
-            optionsArray.push("&has_effect=1&atk=gte0");
-        } else if (cardTypesSet.has("normal") && cardTypesSpecialSet.has("effect")) {
-            optionsArray.push(NO_CARDS);
+        if (cardTypesSet.has("normal") && cardTypesSpecialSet.has("effect")) {
+            return NO_CARDS;
         }
     }
 
@@ -200,7 +221,7 @@ export function parseQuery(query: string): ParseQueryResult {
         if (common.length > 0) {
             optionsArray.push(`&type=${encodeURIComponent(common.join(","))}`);
         } else {
-            optionsArray.push(NO_CARDS);
+            return NO_CARDS;
         }
     }
 
